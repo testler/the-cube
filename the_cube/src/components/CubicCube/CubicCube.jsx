@@ -6,7 +6,7 @@ const dis = 1.1;
 const CubicCube = (props) => {
   return (
     <group {...props}>
-        <SmallCube position={[0,0,0]}/>
+        {/* <SmallCube position={[0,0,0]}/> */}
         <SmallCube position={[dis,0,0]}/>
         <SmallCube position={[-dis,0,0]}/>
         <SmallCube position={[0,dis,0]}/>
