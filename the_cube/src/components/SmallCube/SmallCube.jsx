@@ -1,49 +1,55 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 
-const SmallCube = (props) => {
-  const [x, y, z] = props.position;
+const SmallCube = ({ position }) => {
   const [hovered, hover] = useState(false);
-  const [position, setPosition] = useState(props.position);
+  const [cubePosition, setCubePosition] = useState(position);
   const [multiplier, setMultiplier] = useState(1);
-
   const { camera } = useThree();
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     hover(true);
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     hover(false);
-    setPosition(props.position);
-  };
+    setCubePosition(position);
+  }, [position]);
 
-  const handlePointerDown = (event) => {
+  const cameraPosition = useRef();
+
+  const handlePointerDown = useCallback((event) => {
+    const  {face}  = event;
+    console.log('Clicked face:', face);
     event.stopPropagation();
-    camera.lookAt(x, y, z);
-  };
+    cameraPosition.current = camera.position.clone();
+    camera.lookAt(position[0], position[1], position[2]);
+  }, [camera, position]);
 
-  // Animate the cube
   useFrame((state, delta) => {
-    // If the cube is hovered over, increase the multiplier up to 1.25
     if (hovered) {
-      setMultiplier(Math.min(multiplier + delta * 0.4, 1.25));
+      setMultiplier((prevMultiplier) => Math.min(prevMultiplier + delta * 0.4, 1.1));
     } else {
-      setMultiplier(Math.max(multiplier - delta * 0.4, 1));
+      setMultiplier((prevMultiplier) => Math.max(prevMultiplier - delta * 0.4, 1));
     }
 
-    // Update the cube's position based on the multiplier
-    setPosition([x * multiplier, y * multiplier, z * multiplier]);
+    const oscillation = Math.sin(state.clock.getElapsedTime() * 2) * 0.02;
+    setCubePosition([
+      position[0] * (multiplier + oscillation),
+      position[1] * (multiplier + oscillation),
+      position[2] * (multiplier + oscillation),
+    ]);
   });
+
+  const boxGeometryArgs = useMemo(() => [1, 1, 1], []);
 
   return (
     <mesh
-      {...props}
-      position={position}
+      position={cubePosition}
       onPointerOver={handleMouseEnter}
       onPointerOut={handleMouseLeave}
       onPointerDown={handlePointerDown}>
-      <boxGeometry args={[1, 1, 1]} />
+      <boxGeometry args={boxGeometryArgs} />
       <meshStandardMaterial color={hovered ? '#8b15f9' : '#1537f9'} />
     </mesh>
   );
