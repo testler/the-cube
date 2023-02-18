@@ -1,39 +1,29 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import React, { useState, useMemo } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 const SmallCube = ({ position }) => {
   const [hovered, hover] = useState(false);
   const [cubePosition, setCubePosition] = useState(position);
   const [multiplier, setMultiplier] = useState(1);
-  const { camera } = useThree();
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = (event) => {
+    event.stopPropagation();
     hover(true);
-  }, []);
+  };
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     hover(false);
     setCubePosition(position);
-  }, [position]);
+  };
 
-  const cameraPosition = useRef();
-
-  const handlePointerDown = useCallback((event) => {
-    const  {face}  = event;
-    console.log('Clicked face:', face);
-    event.stopPropagation();
-    cameraPosition.current = camera.position.clone();
-    camera.lookAt(position[0], position[1], position[2]);
-  }, [camera, position]);
-
-  useFrame((state, delta) => {
+  useFrame(({ clock }, delta) => {
     if (hovered) {
       setMultiplier((prevMultiplier) => Math.min(prevMultiplier + delta * 0.4, 1.1));
     } else {
       setMultiplier((prevMultiplier) => Math.max(prevMultiplier - delta * 0.4, 1));
     }
 
-    const oscillation = Math.sin(state.clock.getElapsedTime() * 2) * 0.02;
+    const oscillation = Math.sin(clock.getElapsedTime() * (hovered ? 5.5 : 1.75)) * 0.02;
     setCubePosition([
       position[0] * (multiplier + oscillation),
       position[1] * (multiplier + oscillation),
@@ -44,11 +34,7 @@ const SmallCube = ({ position }) => {
   const boxGeometryArgs = useMemo(() => [1, 1, 1], []);
 
   return (
-    <mesh
-      position={cubePosition}
-      onPointerOver={handleMouseEnter}
-      onPointerOut={handleMouseLeave}
-      onPointerDown={handlePointerDown}>
+    <mesh position={cubePosition} onPointerOver={handleMouseEnter} onPointerOut={handleMouseLeave}>
       <boxGeometry args={boxGeometryArgs} />
       <meshStandardMaterial color={hovered ? '#8b15f9' : '#1537f9'} />
     </mesh>

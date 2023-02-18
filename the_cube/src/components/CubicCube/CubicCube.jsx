@@ -1,7 +1,7 @@
 import React from 'react';
 import SmallCube from '../SmallCube/SmallCube';
 
-const dis = 1.1;
+const dis = 1.05;
 
 const CubicCube = (props) => {
   return (
