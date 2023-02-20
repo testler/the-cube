@@ -1,32 +1,50 @@
-import './App.css';
-import { Canvas, useFrame } from '@react-three/fiber'
-import CubicCube from './components/CubicCube/CubicCube';
-import { OrbitControls, ArcballControls } from '@react-three/drei'
-
+import "./App.css";
+import { Canvas } from "@react-three/fiber";
+import CubicCube from "./components/CubicCube/CubicCube";
+import { OrbitControls, ArcballControls, TransformControls, TrackballControls } from "@react-three/drei";
 
 function App() {
-
-
-  
   return (
-    <Canvas class="bg">
-      <ambientLight intensity={0.5} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <pointLight position={[-10, -10, -10]} />
-      <CubicCube />
-      <ArcballControls enablePan={false} enableZoom={false} dampingFactor={2} />
-      <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} autoRotate={true} autoRotateSpeed={.75}/>
-      <Scene/>
+    <Canvas className="bg">
+      <camera />
+      <ambientLight intensity={0.3}/>
+      <hemisphereLight
+        intensity={0.5}
+        groundColor={"#000000"}
+        skyColor={"#ffffff"}
+        position={[0, 50, 0]}
+      />
+      <directionalLight
+        intensity={0.5}
+        color={"#ffffff"}
+        position={[-10, 10, 10]}
+        castShadow
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
+        shadow-radius={4}
+        shadow-bias={-0.0001}
+      />
+      <directionalLight
+        intensity={0.5}
+        color={"#ffffff"}
+        position={[10, 10, -10]}
+        castShadow
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
+        shadow-radius={4}
+        shadow-bias={-0.0001}
+      />
+      <CubicCube/>
+      <TrackballControls
+        rotateSpeed={1.0}
+        noZoom={true}
+        noPan={true}
+        dynamicDampingFactor={0.1}
+        target={[0, 0, 0]}
+      />
+      <OrbitControls enablePan={false} enableRotate={false} enableZoom={false} autoRotate={true} />
     </Canvas>
   );
-}
-
-function Scene() {
-  useFrame(({ gl, scene, camera }) => {
-    gl.render(scene, camera)
-  })
-
-  return null
 }
 
 export default App;
