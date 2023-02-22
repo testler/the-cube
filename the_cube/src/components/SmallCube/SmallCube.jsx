@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-const SmallCube = ({ position }) => {
+const SmallCube = ({ position },props) => {
   const [hovered, hover] = useState(false);
   const [cubePosition, setCubePosition] = useState(position);
   const [multiplier, setMultiplier] = useState(1);
@@ -34,9 +34,9 @@ const SmallCube = ({ position }) => {
   const boxGeometryArgs = useMemo(() => [1, 1, 1], []);
 
   return (
-    <mesh position={cubePosition} onPointerOver={handleMouseEnter} onPointerOut={handleMouseLeave}>
+    <mesh {...props} position={cubePosition} onPointerOver={handleMouseEnter} onPointerOut={handleMouseLeave}>
       <boxGeometry args={boxGeometryArgs} />
-      <meshStandardMaterial color={hovered ? '#8b15f9' : '#1537f9'} />
+      <meshStandardMaterial color={hovered ? '#8b15f9' : '#1537f9'} transparent opacity={.6} roughness={100}/>
     </mesh>
   );
 };
