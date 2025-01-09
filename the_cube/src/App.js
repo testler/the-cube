@@ -1,7 +1,7 @@
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import CubicCube from "./components/CubicCube/CubicCube";
-import { OrbitControls, ArcballControls, TransformControls, TrackballControls } from "@react-three/drei";
+import { OrbitControls, TrackballControls } from "@react-three/drei";
 
 function App() {
   return (
